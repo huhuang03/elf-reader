@@ -6,12 +6,25 @@
 #define ELF_READER_ELFFILE_H
 
 #include <string>
+#include <vector>
+#include "elf.h"
 
 using namespace std;
 
 class ElfFile {
+private:
+    vector<uint8_t> data;
+    Elf32_Ehdr *elf32Ehdr;
+    Elf64_Ehdr *elf64Ehdr;
+    bool _is32;
+
 public:
-    static bool initialFromFilePath(const string &path);
+    ElfFile();
+    ElfFile(vector<uint8_t> &data);
+    bool is32();
+    bool is64();
+
+    static bool initialFromFilePath(ElfFile &elfFile, const string &path);
 };
 
 
