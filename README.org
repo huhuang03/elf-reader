@@ -1,4 +1,4 @@
 * TODOS
-- install
+- What's the better partern to parse 32 and 64.
 - dump the .systab
 - dump the .dynsym
