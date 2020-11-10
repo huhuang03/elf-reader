@@ -1,3 +1,4 @@
 * TODOS
+- install
 - dump the .systab
 - dump the .dynsym
