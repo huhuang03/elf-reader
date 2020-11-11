@@ -12,6 +12,19 @@
 
 using namespace std;
 
+Elf::Elf() = default;
+
+Elf::Elf(string path) 
+{
+    // read file to content
+    std::ifstream testFile(path, std::ios::binary);
+    std::vector<char> fileContents((std::istreambuf_iterator<char>(testFile)),
+                                   std::istreambuf_iterator<char>());
+    std::vector<unsigned char> data(fileContents.begin(), fileContents.end());
+    this->initialWithData(data);
+}
+
+
 bool Elf::initialFromFilePath(Elf &elfFile, const string &path) {
     // read file to content
     std::ifstream testFile(path, std::ios::binary);
@@ -70,7 +83,6 @@ bool Elf::is64() {
     return !this->is32();
 }
 
-Elf::Elf() = default;
 
 void Elf::initialWithData(vector<uint8_t> data)
 {

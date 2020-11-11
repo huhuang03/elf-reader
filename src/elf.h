@@ -42,6 +42,7 @@ private:
 public:
     Elf();
     Elf(vector<uint8_t> &data);
+    Elf(string path);
     bool is32();
     bool is64();
 
