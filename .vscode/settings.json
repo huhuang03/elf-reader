@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.proto": "proto3",
+        "random": "cpp",
+        "*.tcc": "cpp"
+    }
+}
