@@ -46,9 +46,9 @@ void Elf::pp(bool isPHeader, bool isPSection)
             for (int i = 0; i < this->get_e_shnum(); i++) {
                 auto start = this->get_e_shoff() + (i * this->get_e_shentsize());
                 auto section = Section(this->data.data() + start, is32());
-                section.get_sh_name();
-                cout << "  Section " << section.get_sh_name() << endl;
-                cout << "    Name: " << this->strSection->getNameByIndex(this->data, section.get_sh_name()) << endl;
+                string name = this->strSection->getNameByIndex(this->data, section.get_sh_name());
+                cout << "  Section " << name << endl;
+                cout << "    start: " << section.get_sh_offset() << " size: " << section.get_sh_size() << endl;
             }
         } else {
             cout << "  No Sections" << endl;

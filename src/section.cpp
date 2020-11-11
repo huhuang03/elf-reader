@@ -16,7 +16,7 @@ Elf64_Shdr *Section::as64() {
 }
 
 #define GET_VALUE_OF(name) \
-if (is32) { \
+if (is32) {\
     return as32()->name;\
 } else {\
     return as64()->name;\
