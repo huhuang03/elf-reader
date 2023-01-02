@@ -3,6 +3,7 @@
 //
 #include <reader_util.h>
 #include <fstream>
+#include <string>
 
 namespace elf_reader {
 #define EI_NIDENT 16
@@ -59,7 +60,35 @@ typedef struct {
   Elf64_Half e_shnum;
   Elf64_Half e_shstrndx;
 } Elf64_Ehdr;
+
+typedef struct {
+	Elf32_Word	sh_name;
+	Elf32_Word	sh_type;
+	Elf32_Word	sh_flags;
+	Elf32_Addr	sh_addr;
+	Elf32_Off	sh_offset;
+	Elf32_Word	sh_size;
+	Elf32_Word	sh_link;
+	Elf32_Word	sh_info;
+	Elf32_Word	sh_addralign;
+	Elf32_Word	sh_entsize;
+} Elf32_Shdr;
+
+typedef struct {
+	Elf64_Word	sh_name;
+	Elf64_Word	sh_type;
+	Elf64_Xword	sh_flags;
+	Elf64_Addr	sh_addr;
+	Elf64_Off	sh_offset;
+	Elf64_Xword	sh_size;
+	Elf64_Word	sh_link;
+	Elf64_Word	sh_info;
+	Elf64_Xword	sh_addralign;
+	Elf64_Xword	sh_entsize;
+} Elf64_Shdr;
 }
+
+static void readString(std::ifstream &stream, std::string& str);
 
 int main(int argc, char **argv) {
   if (argc < 2) {
@@ -75,11 +104,46 @@ int main(int argc, char **argv) {
   // how to do this?
 
   std::ifstream f;
-  f.open(argv[1]);
+  f.open(argv[1], std::ios::binary);
 
   elf_reader::Elf64_Ehdr ehdr;
   f.read(reinterpret_cast<char *>(&ehdr), sizeof ehdr);
+
   // how to do this?
   std::cout << "e_shnum: " << ehdr.e_shnum << std::endl;
   std::cout << "e_shstrndx: " << ehdr.e_shstrndx << std::endl;
+  std::cout << "shoff: " << ehdr.e_shoff << std::endl;
+
+  int curOffset = ehdr.e_shoff;
+
+  f.seekg((ehdr.e_shstrndx) * sizeof(elf_reader::Elf64_Ehdr) + ehdr.e_shoff, std::ios::beg);
+  elf_reader::Elf64_Shdr nameShdr;
+  f.read(reinterpret_cast<char *>(&nameShdr), sizeof(elf_reader::Elf64_Ehdr));
+
+  std::cout << "name" << std::endl;
+  for (int i = 0; i < ehdr.e_shnum; i++) {
+    f.seekg(curOffset, std::ios::beg);
+    elf_reader::Elf64_Shdr shdr;
+    f.read(reinterpret_cast<char *>(&shdr), sizeof shdr);
+    // 这里其实有问题，第一个偏移和后面的偏移计算不同
+    int offset = nameShdr.sh_offset + shdr.sh_name;
+    if (shdr.sh_name == 0) {
+      offset += 1;
+    }
+    f.seekg(offset, std::ios::beg);
+    std::string name;
+    readString(f, name);
+    std::cout << name << std::endl;
+    curOffset += sizeof shdr;
+  }
+
+}
+
+static void readString(std::ifstream &stream, std::string& str) {
+  int s = stream.peek();
+  while (s != 0) {
+    str.push_back((char)s);
+    stream.get();
+    s = stream.peek();
+  }
 }
