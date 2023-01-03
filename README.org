@@ -2,4 +2,5 @@
 ** print all sections.
 
 * Links
--
+- https://blogs.oracle.com/solaris/post/inside-elf-symbol-tables
+
