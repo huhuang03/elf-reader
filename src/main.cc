@@ -110,9 +110,9 @@ int main(int argc, char **argv) {
   f.read(reinterpret_cast<char *>(&ehdr), sizeof ehdr);
 
   // how to do this?
-  std::cout << "e_shnum: " << ehdr.e_shnum << std::endl;
-  std::cout << "e_shstrndx: " << ehdr.e_shstrndx << std::endl;
-  std::cout << "shoff: " << ehdr.e_shoff << std::endl;
+//  std::cout << "e_shnum: " << ehdr.e_shnum << std::endl;
+//  std::cout << "e_shstrndx: " << ehdr.e_shstrndx << std::endl;
+//  std::cout << "shoff: " << ehdr.e_shoff << std::endl;
 
   int curOffset = ehdr.e_shoff;
 
@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
   elf_reader::Elf64_Shdr nameShdr;
   f.read(reinterpret_cast<char *>(&nameShdr), sizeof(elf_reader::Elf64_Ehdr));
 
-  std::cout << "name" << std::endl;
+  std::cout << "name\t\t\toffset" << std::endl;
   for (int i = 0; i < ehdr.e_shnum; i++) {
     f.seekg(curOffset, std::ios::beg);
     elf_reader::Elf64_Shdr shdr;
@@ -133,7 +133,7 @@ int main(int argc, char **argv) {
     f.seekg(offset, std::ios::beg);
     std::string name;
     readString(f, name);
-    std::cout << name << std::endl;
+    std::cout << name << "\t" << shdr.sh_offset << std::endl;
     curOffset += sizeof shdr;
   }
 
