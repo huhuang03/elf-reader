@@ -1,4 +1,5 @@
 * TODOS
+** show extern function in so
 ** print all sections.
 
 * Links

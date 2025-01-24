@@ -109,13 +109,14 @@ int main(int argc, char **argv) {
   elf_reader::Elf64_Ehdr ehdr;
   f.read(reinterpret_cast<char *>(&ehdr), sizeof ehdr);
 
+  std::cout << "Header:" << std::endl;
   // how to do this?
-  std::cout << "e_shnum: " << ehdr.e_shnum << std::endl;
-  std::cout << "e_shstrndx: " << ehdr.e_shstrndx << std::endl;
-  std::cout << "shoff: " << ehdr.e_shoff << std::endl;
+  std::cout << "\te_entry: " << reader_util::toStrAsLEHex(&ehdr.e_entry, sizeof ehdr.e_entry) << std::endl;
+  std::cout << "\te_shnum: " << ehdr.e_shnum << std::endl;
+  std::cout << "\te_shstrndx: " << ehdr.e_shstrndx << std::endl;
+  std::cout << "\tshoff: " << ehdr.e_shoff << std::endl;
 
   int curOffset = ehdr.e_shoff;
-
   f.seekg((ehdr.e_shstrndx) * sizeof(elf_reader::Elf64_Ehdr) + ehdr.e_shoff, std::ios::beg);
   elf_reader::Elf64_Shdr nameShdr;
   f.read(reinterpret_cast<char *>(&nameShdr), sizeof(elf_reader::Elf64_Ehdr));
