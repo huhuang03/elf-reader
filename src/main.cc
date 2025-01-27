@@ -1,7 +1,7 @@
 //
 // Created by huhua on 2022/12/28.
 //
-#include <reader_util.h>
+#include <bin_util/bin_util.h>
 #include <fstream>
 #include <string>
 
@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
     return 0;
   }
 
-  if (!reader_util::isFileExists(argv[1])) {
+  if (!bu::isFileExists(argv[1])) {
     std::cout << "file not exist: " << argv[1] << std::endl;
     return 1;
   }
@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
 
   std::cout << "Header:" << std::endl;
   // how to do this?
-  std::cout << "\te_entry: " << reader_util::toStrAsLEHex(&ehdr.e_entry, sizeof ehdr.e_entry) << std::endl;
+  std::cout << "\te_entry: " << bu::toStrAsLEHex(&ehdr.e_entry, sizeof ehdr.e_entry) << std::endl;
   std::cout << "\te_shnum: " << ehdr.e_shnum << std::endl;
   std::cout << "\te_shstrndx: " << ehdr.e_shstrndx << std::endl;
   std::cout << "\tshoff: " << ehdr.e_shoff << std::endl;

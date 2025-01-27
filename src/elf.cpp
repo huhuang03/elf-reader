@@ -1,6 +1,6 @@
 #include "elf.h"
 #include <iostream>
-#include <reader_util.h>
+#include <bin_util/bin_util.h>
 
 std::string Elf::checkMagic() {
   // assume in_stream_ is ok
@@ -17,7 +17,7 @@ std::string Elf::checkMagic() {
 }
 
 Elf::Elf(const std::string &filepath) {
-  if (!reader_util::isFileExists(filepath)) {
+  if (!bu::isFileExists(filepath)) {
     std::cout << filepath << " not exit!" << std::endl;
     // good at here??
     exit(0);
