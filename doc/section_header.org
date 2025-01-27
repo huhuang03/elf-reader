@@ -1,0 +1,13 @@
+* sh_addr
+Virtual address of the section in memory, for sections that are loaded.
+
+* sh_offset
+Offset of the section in the file image.
+
+* sh_size
+Size in bytes of the section in the file image. May be 0.
+
+* sh_entsize
+Contains the size, in bytes, of each entry, for sections that contain fixed-size entries. Otherwise, this field contains zero.
+
+I think this define the section data contains fixed-size entries, and this is the size off each entry

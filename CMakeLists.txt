@@ -4,6 +4,7 @@ ensure_vcpkg()
 project(elf-reader)
 add_subdirectory(../bin-util/src bin-util)
 
+set(CMAKE_CXX_STANDARD 11)
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 

@@ -121,23 +121,29 @@ int main(int argc, char **argv) {
   elf_reader::Elf64_Shdr nameShdr;
   f.read(reinterpret_cast<char *>(&nameShdr), sizeof(elf_reader::Elf64_Ehdr));
 
-  std::cout << "name" << std::endl;
+//  std::cout << "name\t\t\toffset" << std::endl;
   for (int i = 0; i < ehdr.e_shnum; i++) {
     f.seekg(curOffset, std::ios::beg);
     elf_reader::Elf64_Shdr shdr;
     f.read(reinterpret_cast<char *>(&shdr), sizeof shdr);
     // 这里其实有问题，第一个偏移和后面的偏移计算不同
     int offset = nameShdr.sh_offset + shdr.sh_name;
-    if (shdr.sh_name == 0) {
-      offset += 1;
-    }
+//    if (shdr.sh_name == 0) {
+//      offset += 1;
+//    }
     f.seekg(offset, std::ios::beg);
     std::string name;
     readString(f, name);
-    std::cout << name << std::endl;
+    std::cout << name << ", sh_offset: " << shdr.sh_offset << ", sh_size: " << shdr.sh_size << ", sh_entsize: " << shdr.sh_entsize << std::endl;
     curOffset += sizeof shdr;
   }
 
+  std::cout << "\nProgram Headers(" << ehdr.e_phnum << ")" << std::endl;
+  f.seekg(ehdr.e_phoff, std::ios::beg);
+  for (int i = 0; i < ehdr.e_phnum; i++) {
+    f.read()
+    std::cout << "p_vaddr" <<  << std::endl;
+  }
 }
 
 static void readString(std::ifstream &stream, std::string& str) {

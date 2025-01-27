@@ -1,7 +1,7 @@
 * TODOS
 ** show extern function in so
 ** print all sections.
+** determine 32 or 64
 
 * Links
-- https://blogs.oracle.com/solaris/post/inside-elf-symbol-tables
-
+- [[http://www.linker-aliens.org/blogs/ali/entry/inside_elf_symbol_tables/][inside_elf_symbol_tables]]
