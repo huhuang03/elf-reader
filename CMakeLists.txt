@@ -8,6 +8,4 @@ set(CMAKE_CXX_STANDARD 11)
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
-add_executable(elf-reader src/elf.cpp src/elf.h src/main.cc)
-target_link_libraries(elf-reader bin-util)
-install(TARGETS elf-reader)
+add_subdirectory(src)
