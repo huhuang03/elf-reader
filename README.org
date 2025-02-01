@@ -5,3 +5,4 @@
 
 * Links
 - [[http://www.linker-aliens.org/blogs/ali/entry/inside_elf_symbol_tables/][inside_elf_symbol_tables]]
+- [[https://en.wikipedia.org/wiki/Executable_and_Linkable_Format][elf format]]

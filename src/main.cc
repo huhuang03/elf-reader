@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include "./sys_elf.h"
+#include "./elf.h"
 
 static std::vector<char> readStrTab(std::ifstream &stream, elf_reader::Elf64_Shdr strShdr) {
   stream.seekg(strShdr.sh_offset);
@@ -23,49 +24,60 @@ int main(int argc, char **argv) {
     std::cout << "file not exist: " << argv[1] << std::endl;
     return 1;
   }
-
+  const auto elf = new elf_reader::Elf(argv[1]);
+  elf->printSections();
   // how to do this?
-  std::ifstream f;
-  f.open(argv[1], std::ios::binary);
-
-  elf_reader::Elf64_Ehdr ehdr;
-  f.read(reinterpret_cast<char *>(&ehdr), sizeof ehdr);
-
-  std::cout << "Header:" << std::endl;
-  // how to do this?
-  std::cout << "\te_entry: " << bu::toStrAsLEHex(&ehdr.e_entry, sizeof ehdr.e_entry) << std::endl;
-  std::cout << "\te_shnum: " << ehdr.e_shnum << std::endl;
-  std::cout << "\te_shstrndx: " << ehdr.e_shstrndx << std::endl;
-  std::cout << "\tshoff: " << ehdr.e_shoff << std::endl;
-
-  std::cout << "Sections:" << std::endl;
-  f.seekg(static_cast<long long>(ehdr.e_shoff));
-  std::vector<elf_reader::Elf64_Shdr> sectionHeader(ehdr.e_shnum);
-  f.read(reinterpret_cast<char*>(sectionHeader.data()), ehdr.e_shnum * sizeof(elf_reader::Elf64_Shdr));
-  elf_reader::Elf64_Shdr* symtab = nullptr;
-  elf_reader::Elf64_Shdr* strtab = nullptr;
-  for (const auto& sh : sectionHeader) {
-    // std::cout << "found a section" << std::endl;
-    if (sh.sh_type == SHT_SYMTAB) {
-      symtab = const_cast<elf_reader::Elf64_Shdr*>(&sh);
-    }
-    if (sh.sh_type == SHT_STRTAB && symtab && sectionHeader[symtab->sh_link].sh_offset == sh.sh_offset) {
-      strtab = const_cast<elf_reader::Elf64_Shdr*>(&sh);
-    }
-  }
-  if (!strtab) {
-    std::cerr << "Symbol table or string table not found" << std::endl;
-    return 1;
-  }
-  // 读取符号表
-  std::vector<elf_reader::Elf64_Sym> symbols(symtab->sh_size / sizeof(elf_reader::Elf64_Sym));
-  f.seekg(symtab->sh_offset);
-  f.read(reinterpret_cast<char*>(symbols.data()), symtab->sh_size);
-  std::cout << "Extern functions:" << std::endl;
-  auto parsedString = readStrTab(f, *strtab);
-  for (const auto & sym : symbols) {
-    if (ELF64_ST_TYPE(sym.st_info) == STT_FUNC) {
-      std::cout << &parsedString[sym.st_name] << std::endl;
-    }
-  }
+  // std::ifstream f;
+  // f.open(argv[1], std::ios::binary);
+  //
+  // elf_reader::Elf64_Ehdr ehdr;
+  // f.read(reinterpret_cast<char *>(&ehdr), sizeof ehdr);
+  //
+  // std::cout << "Header:" << std::endl;
+  // // how to do this?
+  // std::cout << "\te_entry: " << bu::toStrAsLEHex(&ehdr.e_entry, sizeof ehdr.e_entry) << std::endl;
+  // std::cout << "\te_shnum: " << ehdr.e_shnum << std::endl;
+  // std::cout << "\te_shstrndx: " << ehdr.e_shstrndx << std::endl;
+  // std::cout << "\tshoff: " << ehdr.e_shoff << std::endl;
+  //
+  // std::cout << "Sections:" << std::endl;
+  // f.seekg(static_cast<long long>(ehdr.e_shoff));
+  // std::vector<elf_reader::Elf64_Shdr> sectionHeader(ehdr.e_shnum);
+  // f.read(reinterpret_cast<char*>(sectionHeader.data()), ehdr.e_shnum * sizeof(elf_reader::Elf64_Shdr));
+  // elf_reader::Elf64_Shdr* symtab = nullptr;
+  // elf_reader::Elf64_Shdr* dynsym = nullptr;
+  // elf_reader::Elf64_Shdr* strtab = nullptr;
+  // elf_reader::Elf64_Shdr* dynStrtab = nullptr;
+  //
+  // for (const auto& sh : sectionHeader) {
+  //   if (sh.sh_type == SHT_SYMTAB) {
+  //     symtab = const_cast<elf_reader::Elf64_Shdr*>(&sh);
+  //   }
+  //   if (sh.sh_type == SHT_DYNSYM) {
+  //     std::cout << "found dynsym" << std::endl;
+  //     dynsym = const_cast<elf_reader::Elf64_Shdr*>(&sh);
+  //   }
+  //   if (sh.sh_type == SHT_STRTAB && symtab && sectionHeader[symtab->sh_link].sh_offset == sh.sh_offset) {
+  //     strtab = const_cast<elf_reader::Elf64_Shdr*>(&sh);
+  //   }
+  //   if (sh.sh_type == SHT_STRTAB && dynsym && sectionHeader[dynsym->sh_link].sh_offset == sh.sh_offset) {
+  //     dynStrtab = const_cast<elf_reader::Elf64_Shdr*>(&sh);
+  //   }
+  // }
+  // if (!strtab) {
+  //   std::cerr << "Symbol table or string table not found" << std::endl;
+  //   return 1;
+  // }
+  // std::cout << "dynStrtab: " << dynStrtab << std::endl;;
+  // // 读取符号表
+  // std::vector<elf_reader::Elf64_Sym> symbols(symtab->sh_size / sizeof(elf_reader::Elf64_Sym));
+  // f.seekg(symtab->sh_offset);
+  // f.read(reinterpret_cast<char*>(symbols.data()), symtab->sh_size);
+  // std::cout << "Functions:" << std::endl;
+  // auto parsedString = readStrTab(f, *strtab);
+  // for (const auto & sym : symbols) {
+  //   if (ELF64_ST_TYPE(sym.st_info) == STT_FUNC) {
+  //     std::cout << &parsedString[sym.st_name] << std::endl;
+  //   }
+  // }
 }

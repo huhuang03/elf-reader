@@ -5,6 +5,9 @@
 #ifndef SYS_ELF_H
 #define SYS_ELF_H
 #include <cstdint>
+#include <string>
+#include <unordered_map>
+
 namespace elf_reader {
 /* sh_type */
 #define SHT_NULL 0
@@ -24,6 +27,13 @@ namespace elf_reader {
 #define SHT_HIPROC 0x7fffffff
 #define SHT_LOUSER 0x80000000
 #define SHT_HIUSER 0xffffffff
+
+/**
+ * section type to name
+ * @param st seciton type
+ * @return
+ */
+std::string sectionTypeName(int st);
 
 #define EI_NIDENT 16
 typedef uint16_t Elf32_Half;
