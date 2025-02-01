@@ -25,7 +25,27 @@ int main(int argc, char **argv) {
     return 1;
   }
   const auto elf = new elf_reader::Elf(argv[1]);
-  elf->printSections();
+  auto symHeader = elf->getSymSh();
+  auto stream = elf->getStream();
+  auto size = symHeader->getShdr()->sh_size / sizeof(elf_reader::Elf64_Sym);
+  std::vector<elf_reader::Elf64_Sym> symbols(size);
+  stream->seekg(symHeader->getShdr()->sh_offset);
+  stream->read(reinterpret_cast<char*>(symbols.data()), symHeader->getShdr()->sh_size);
+  auto symNameSh = elf->getSymNameSh();
+  std::cout << "symNameSh: " << symNameSh << std::endl;
+  for (auto symbol : symbols) {
+    std::cout << elf->getName(symNameSh, symbol.st_name) << "\n";
+  }
+  // but how to get str tab??
+  // std::cout << elf->getSectionName(symHeader) << std::endl;
+  // std::cout << *symHeader << std::endl;
+  // std::cout << elf->getShstrndx() << std::endl;
+  // std::cout << "is64: " << elf->is64() << std::endl;
+  // // elf->printSections();
+  // auto symHeader = elf->symHeader();
+  // std::cout << "symHeader: " << *symHeader << std::endl;
+  // // sizeof(elf_reader::Elf64_Shdr)
+  // std::cout << "Elf64_Shdr: " << sizeof(elf_reader::Elf64_Sym) << std::endl;
   // how to do this?
   // std::ifstream f;
   // f.open(argv[1], std::ios::binary);

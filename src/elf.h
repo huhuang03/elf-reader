@@ -21,9 +21,19 @@ class Elf {
 public:
   explicit Elf(const std::string &filepath);
   ~Elf();
-  SectionHeader* symHeader();
-  SectionHeader* dynHeader();
+  std::ifstream* getStream() const;
+  /**
+   * @return the str section header which contains the section names
+   */
+  SectionHeader* getShstrHeader();
+  SectionHeader* getSymSh();
+  SectionHeader* getDynHeader();
+  SectionHeader* getSymNameSh();
+  std::string getName(SectionHeader* nameSectionHeader, int offset) const;
+  std::string getSectionName(SectionHeader*);
   void printSections() const;
+  bool is64() const;
+  int getShstrndx() const;
 };
 }
 

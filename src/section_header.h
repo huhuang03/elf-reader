@@ -13,6 +13,7 @@ class SectionHeader {
 public:
   void read(std::ifstream &f);
   Elf64_Shdr* getShdr();
+  friend std::ostream& operator<<(std::ostream& stream, const SectionHeader& sectionHeader);
 };
 } // namespace elf_reader
 #endif // SECTION_H

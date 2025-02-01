@@ -10,8 +10,6 @@ elf_reader::Elf::Elf(const std::string &filepath) {
   }
 
   this->in_stream_ = new std::ifstream(filepath.c_str());
-  // read ehdr
-  Elf64_Ehdr ehdr;
   this->in_stream_->read(reinterpret_cast<char *>(&ehdr), sizeof ehdr);
 
   const auto errMsg = checkMagic();
@@ -35,7 +33,15 @@ elf_reader::Elf::~Elf() {
   }
 }
 
-elf_reader::SectionHeader *elf_reader::Elf::symHeader() {
+std::ifstream* elf_reader::Elf::getStream() const {
+  return this->in_stream_;
+}
+
+elf_reader::SectionHeader *elf_reader::Elf::getShstrHeader() {
+  return &this->sectionHeaders[this->getShstrndx()];
+}
+
+elf_reader::SectionHeader *elf_reader::Elf::getSymSh() {
   for (auto &section: sectionHeaders) {
     if (section.getShdr()->sh_type == SHT_SYMTAB) {
       return &section;
@@ -44,13 +50,33 @@ elf_reader::SectionHeader *elf_reader::Elf::symHeader() {
   return nullptr;
 }
 
-elf_reader::SectionHeader *elf_reader::Elf::dynHeader() {
+elf_reader::SectionHeader *elf_reader::Elf::getDynHeader() {
   for (auto &section : sectionHeaders) {
     if (section.getShdr()->sh_type == SHT_DYNSYM) {
       return &section;
     }
   }
   return nullptr;
+}
+
+elf_reader::SectionHeader *elf_reader::Elf::getSymNameSh() {
+  auto symSh = this->getSymSh();
+  if (!symSh) {
+    std::cerr << "not find sym sh" << std::endl;
+    return nullptr;
+  }
+  return &sectionHeaders[symSh->getShdr()->sh_link];
+}
+
+std::string elf_reader::Elf::getName(SectionHeader *nameSectionHeader, int offset) const {
+  std::vector<char> rst(nameSectionHeader->getShdr()->sh_size);
+  this->in_stream_->seekg(nameSectionHeader->getShdr()->sh_offset);
+  this->in_stream_->read(rst.data(), nameSectionHeader->getShdr()->sh_size);
+  return std::string(&rst[offset]);
+}
+
+std::string elf_reader::Elf::getSectionName(SectionHeader *sectionHeader) {
+  return getName(this->getShstrHeader(), sectionHeader->getShdr()->sh_name);
 }
 
 void elf_reader::Elf::printSections() const {
@@ -64,6 +90,12 @@ void elf_reader::Elf::printSections() const {
   }
   // for (const auto & sectionHeader : sectionHeaders) {
   // }
+}
+
+bool elf_reader::Elf::is64() const { return this->ehdr.e_ident[0x04] == 2; }
+
+int elf_reader::Elf::getShstrndx() const {
+  return this->ehdr.e_shstrndx;
 }
 
 std::string elf_reader::Elf::checkMagic() const {
